@@ -8,17 +8,24 @@ import (
 	"path/filepath"
 	"sort"
 
+	"github.com/fhs/gompd/mpd"
 	"github.com/hawx/aoide/data"
 	"github.com/hawx/aoide/song"
 )
 
 func New(musicDir string, db *data.Database) *Adder {
-	return &Adder{musicDir, db}
+	conn, err := mpd.Dial("tcp", ":6600")
+	if err != nil {
+		conn = nil
+	}
+
+	return &Adder{musicDir, db, conn}
 }
 
 type Adder struct {
 	musicDir string
 	db       *data.Database
+	client   *mpd.Client
 }
 
 type addRecord struct {
@@ -91,11 +98,18 @@ func (a *Adder) doAdd(recs []addRecord) error {
 
 		s, err := song.Read(rec.to)
 		if err != nil {
-			log.Printf("Could not add %s: %s\n", rec.from, err)
+			log.Printf("Could not add %s to db: %s\n", rec.from, err)
 		}
 
 		if err := a.db.Insert(s); err != nil {
-			log.Printf("Could not add %s: %s\n", rec.from, err)
+			log.Printf("Could not add %s to db: %s\n", rec.from, err)
+		}
+
+		if a.client != nil {
+			p, _ := filepath.Rel(a.musicDir, rec.to)
+			if _, err := a.client.Update(p); err != nil {
+				log.Printf("Could not add %s to mpd: %s\n", rec.from, err)
+			}
 		}
 	}
 
