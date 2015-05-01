@@ -9,8 +9,8 @@ import (
 	"sort"
 
 	"github.com/fhs/gompd/mpd"
-	"github.com/hawx/aoide/data"
-	"github.com/hawx/aoide/song"
+	"hawx.me/code/aoide/data"
+	"hawx.me/code/aoide/song"
 )
 
 func New(musicDir string, db *data.Database) *Adder {

@@ -3,8 +3,8 @@ package cmd
 import (
 	"log"
 
-	"github.com/hawx/aoide/tools/organise"
-	"github.com/hawx/hadfield"
+	"hawx.me/code/aoide/tools/organise"
+	"hawx.me/code/hadfield"
 )
 
 func Organise(organiser *organise.Organiser) *hadfield.Command {

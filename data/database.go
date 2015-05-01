@@ -37,7 +37,10 @@ func (d *Database) setup() error {
     Length      INTEGER,
     Title       TEXT,
     Track       INTEGER,
-    TrackTotal  INTEGER
+    TrackTotal  INTEGER,
+    Mbid        CHARACTER(36),
+    AlbumMbid   CHARACTER(36),
+    ArtistMbid  CHARACTER(36)
   );
 `)
 
@@ -61,7 +64,7 @@ func (d *Database) IsStale(path string, modtime time.Time) bool {
 }
 
 func (d *Database) Insert(song Song) error {
-	_, err := d.db.Exec("INSERT INTO songs VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+	_, err := d.db.Exec("INSERT INTO songs VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 		nil,
 		song.Path,
 		time.Now(),
@@ -76,7 +79,10 @@ func (d *Database) Insert(song Song) error {
 		song.Length,
 		song.Title,
 		song.Track,
-		song.TrackTotal)
+		song.TrackTotal,
+		"",
+		"",
+		"")
 
 	if serr, ok := err.(*sqlite3.Error); ok && serr.Code() == 2067 {
 		_, err := d.db.Exec(`UPDATE songs SET

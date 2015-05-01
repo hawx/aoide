@@ -3,8 +3,8 @@ package cmd
 import (
 	"log"
 
-	"github.com/hawx/aoide/tools/index"
-	"github.com/hawx/hadfield"
+	"hawx.me/code/aoide/tools/index"
+	"hawx.me/code/hadfield"
 )
 
 func Index(indexer *index.Indexer) *hadfield.Command {

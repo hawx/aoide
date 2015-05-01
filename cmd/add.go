@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/hawx/aoide/tools/add"
-	"github.com/hawx/hadfield"
+	"hawx.me/code/aoide/tools/add"
+	"hawx.me/code/hadfield"
 )
 
 func Add(adder *add.Adder) *hadfield.Command {

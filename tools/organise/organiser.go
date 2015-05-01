@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/hawx/aoide/data"
-	"github.com/hawx/aoide/diff"
-	"github.com/hawx/aoide/playlist"
-	"github.com/hawx/aoide/song"
+	"hawx.me/code/aoide/data"
+	"hawx.me/code/aoide/diff"
+	"hawx.me/code/aoide/playlist"
+	"hawx.me/code/aoide/song"
 )
 
 func New(musicDir, playlistDir string, db *data.Database) *Organiser {

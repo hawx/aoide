@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hawx/aoide/data"
 	"github.com/nicksellen/audiotags"
+	"hawx.me/code/aoide/data"
 )
 
 func Read(path string) (data.Song, error) {

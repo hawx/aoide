@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hawx/aoide/data"
-	"github.com/hawx/aoide/song"
+	"hawx.me/code/aoide/data"
+	"hawx.me/code/aoide/song"
 )
 
 func New(root string, db *data.Database) *Indexer {

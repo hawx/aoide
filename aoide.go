@@ -6,13 +6,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hawx/aoide/cmd"
-	"github.com/hawx/aoide/data"
-	"github.com/hawx/aoide/tools/add"
-	"github.com/hawx/aoide/tools/index"
-	"github.com/hawx/aoide/tools/organise"
-	"github.com/hawx/hadfield"
 	"github.com/stvp/go-toml-config"
+	"hawx.me/code/aoide/cmd"
+	"hawx.me/code/aoide/data"
+	"hawx.me/code/aoide/tools/add"
+	"hawx.me/code/aoide/tools/autotag"
+	"hawx.me/code/aoide/tools/index"
+	"hawx.me/code/aoide/tools/organise"
+	"hawx.me/code/hadfield"
 )
 
 var (
@@ -24,7 +25,7 @@ var (
 )
 
 var templates = hadfield.Templates{
-	Usage: `Usage: aoide [command] [arguments]
+	Help: `Usage: aoide [command] [arguments]
 
   A music library manager.
 
@@ -39,7 +40,7 @@ var templates = hadfield.Templates{
   Commands: {{range .}}
     {{.Name | printf "%-15s"}} # {{.Short}}{{end}}
 `,
-	Help: `usage: test {{.Usage}}
+	Command: `usage: aoide {{.Usage}}
 {{.Long}}
 `,
 }
@@ -100,9 +101,11 @@ func main() {
 	adder := add.New(*musicDir, db)
 	indexer := index.New(*musicDir, db)
 	organiser := organise.New(*musicDir, *playlistDir, db)
+	tagger := autotag.New(*musicDir, db)
 
 	var commands = hadfield.Commands{
 		cmd.Add(adder),
+		cmd.Autotag(tagger),
 		cmd.Index(indexer),
 		cmd.Organise(organiser),
 	}
