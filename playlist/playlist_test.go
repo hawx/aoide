@@ -104,9 +104,9 @@ func TestPlaylistWrite(t *testing.T) {
 		},
 	}
 
-	expectedText := `my_song.mp3
-other.m4a
-`
+	expectedText := `
+my_song.mp3
+other.m4a`
 
 	buf := new(bytes.Buffer)
 	assert.Nil(t, p.Write(buf))
@@ -125,8 +125,7 @@ func TestPlaylistWriteExtended(t *testing.T) {
 	expectedText := `#EXTM3U
 my_song.mp3
 #EXTINF:456;song - artist
-other.m4a
-`
+other.m4a`
 
 	buf := new(bytes.Buffer)
 	assert.Nil(t, p.Write(buf))
