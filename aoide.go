@@ -14,6 +14,7 @@ import (
 	"hawx.me/code/aoide/tools/index"
 	"hawx.me/code/aoide/tools/organise"
 	"hawx.me/code/hadfield"
+	"hawx.me/code/xdg"
 )
 
 var (
@@ -45,38 +46,6 @@ var templates = hadfield.Templates{
 `,
 }
 
-func findConfigFile() string {
-	const (
-		configSuffix         = "/aoide/rc"
-		defaultXdgConfigDirs = "/etc/xdg"
-	)
-
-	var (
-		defaultXdgConfigHome = os.ExpandEnv("$HOME/.config")
-		xdgConfigDirs        = os.Getenv("XDG_CONFIG_DIRS")
-		xdgConfigHome        = os.Getenv("XDG_CONFIG_HOME")
-	)
-
-	if xdgConfigDirs == "" {
-		xdgConfigDirs = defaultXdgConfigDirs
-	}
-	if xdgConfigHome == "" {
-		xdgConfigHome = defaultXdgConfigHome
-	}
-
-	if _, err := os.Stat(xdgConfigHome + configSuffix); err == nil {
-		return xdgConfigHome + configSuffix
-	}
-
-	for _, path := range strings.Split(xdgConfigDirs, ":") {
-		if _, err := os.Stat(path + configSuffix); err == nil {
-			return path + configSuffix
-		}
-	}
-
-	return ""
-}
-
 func main() {
 	flag.Parse()
 
@@ -84,7 +53,7 @@ func main() {
 		log.Println("Usage: aoide COMMAND [options]")
 	}
 
-	if err := config.Parse(findConfigFile()); err != nil {
+	if err := config.Parse(xdg.Config("aoide/rc")); err != nil {
 		log.Fatal("toml:", err)
 	}
 
