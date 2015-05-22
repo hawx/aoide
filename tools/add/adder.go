@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"time"
 
 	"github.com/fhs/gompd/mpd"
 	"hawx.me/code/aoide/data"
@@ -39,7 +40,7 @@ func (a byPath) Len() int           { return len(a) }
 func (a byPath) Less(i, j int) bool { return a[i].to < a[j].to }
 func (a byPath) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
-func (a *Adder) Add(paths ...string) (err error) {
+func (a *Adder) Add(queue bool, paths ...string) (err error) {
 	recs := []addRecord{}
 	for _, path := range paths {
 		s, err := song.Read(path)
@@ -77,7 +78,7 @@ func (a *Adder) Add(paths ...string) (err error) {
 
 	if response == "y" || response == "Y" {
 		log.Println("adding...")
-		a.doAdd(recs)
+		a.doAdd(queue, recs)
 	} else {
 		log.Println("skipping...")
 	}
@@ -85,7 +86,9 @@ func (a *Adder) Add(paths ...string) (err error) {
 	return
 }
 
-func (a *Adder) doAdd(recs []addRecord) error {
+func (a *Adder) doAdd(queue bool, recs []addRecord) error {
+	var toQueue []string
+
 	for _, rec := range recs {
 		if err := os.MkdirAll(filepath.Dir(rec.to), 0755); err != nil {
 			log.Printf("Could not add %s: %s\n", rec.from, err)
@@ -94,21 +97,40 @@ func (a *Adder) doAdd(recs []addRecord) error {
 
 		if err := copyFile(rec.from, rec.to); err != nil {
 			log.Printf("Could not add %s: %s\n", rec.from, err)
+			continue
 		}
 
 		s, err := song.Read(rec.to)
 		if err != nil {
 			log.Printf("Could not add %s to db: %s\n", rec.from, err)
+			continue
 		}
 
 		if err := a.db.Insert(s); err != nil {
 			log.Printf("Could not add %s to db: %s\n", rec.from, err)
+			continue
 		}
 
 		if a.client != nil {
 			p, _ := filepath.Rel(a.musicDir, rec.to)
 			if _, err := a.client.Update(p); err != nil {
 				log.Printf("Could not add %s to mpd: %s\n", rec.from, err)
+				continue
+			}
+
+			if queue {
+				toQueue = append(toQueue, p)
+			}
+		}
+	}
+
+	if len(toQueue) > 0 {
+		time.Sleep(time.Second) // ugh
+
+		for _, p := range toQueue {
+			if err := a.client.Add(p); err != nil {
+				log.Printf("Could not add %s to playlist: %s\n", p, err)
+				continue
 			}
 		}
 	}
