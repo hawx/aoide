@@ -3,8 +3,6 @@ package main
 import (
 	"flag"
 	"log"
-	"os"
-	"strings"
 
 	"github.com/stvp/go-toml-config"
 	"hawx.me/code/aoide/cmd"
@@ -12,6 +10,7 @@ import (
 	"hawx.me/code/aoide/tools/add"
 	"hawx.me/code/aoide/tools/autotag"
 	"hawx.me/code/aoide/tools/index"
+	"hawx.me/code/aoide/tools/list"
 	"hawx.me/code/aoide/tools/organise"
 	"hawx.me/code/hadfield"
 	"hawx.me/code/xdg"
@@ -71,11 +70,13 @@ func main() {
 	indexer := index.New(*musicDir, db)
 	organiser := organise.New(*musicDir, *playlistDir, db)
 	tagger := autotag.New(*musicDir, db)
+	lister := list.New(db)
 
 	var commands = hadfield.Commands{
 		cmd.Add(adder),
 		cmd.Autotag(tagger),
 		cmd.Index(indexer),
+		cmd.List(lister),
 		cmd.Organise(organiser),
 	}
 

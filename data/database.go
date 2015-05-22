@@ -132,7 +132,10 @@ func (d *Database) Each(f func(Song) error, qs ...Clause) error {
 	} else {
 		stmt += " WHERE"
 		args := []interface{}{}
-		for _, q := range qs {
+		for i, q := range qs {
+			if i > 0 {
+				stmt += " AND"
+			}
 			stmt += " " + q.Clause()
 			args = append(args, q.Arg())
 		}

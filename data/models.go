@@ -17,3 +17,10 @@ type Song struct {
 	Track,
 	TrackTotal int
 }
+
+func (s Song) DisplayArtist() string {
+	if s.AlbumArtist != "" {
+		return s.AlbumArtist
+	}
+	return s.Artist
+}
