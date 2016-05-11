@@ -12,6 +12,7 @@ func List(lister *list.Lister) *hadfield.Command {
 		track  string
 		after  string
 		before string
+		json   bool
 	)
 
 	cmd := &hadfield.Command{
@@ -25,9 +26,10 @@ func List(lister *list.Lister) *hadfield.Command {
     --track PRED    # Show if track matches PRED
     --after DUR     # Show if added after duration
     --before DUR    # Show if added before duration
+    --json          # Print all data as JSON
 `,
 		Run: func(cmd *hadfield.Command, args []string) {
-			lister.List(artist, album, track, after, before)
+			lister.List(artist, album, track, after, before, json)
 		},
 	}
 
@@ -36,6 +38,7 @@ func List(lister *list.Lister) *hadfield.Command {
 	cmd.Flag.StringVar(&track, "track", "", "")
 	cmd.Flag.StringVar(&after, "after", "", "")
 	cmd.Flag.StringVar(&before, "before", "", "")
+	cmd.Flag.BoolVar(&json, "json", false, "")
 
 	return cmd
 }

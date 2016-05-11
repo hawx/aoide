@@ -1,6 +1,7 @@
 package list
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -15,7 +16,7 @@ type Lister struct {
 	db *data.Database
 }
 
-func (l *Lister) List(artist, album, track, after, before string) {
+func (l *Lister) List(artist, album, track, after, before string, json bool) {
 	var clauses []data.Clause
 	if artist != "" {
 		clauses = append(clauses, data.PrefixClause{"Artist", artist})
@@ -38,25 +39,39 @@ func (l *Lister) List(artist, album, track, after, before string) {
 		clauses = append(clauses, data.LessThanClause{"Updated", t.Unix()})
 	}
 
+	formatter := SimpleFormatter
+	if json {
+		formatter = JsonFormatter
+	}
+
 	l.db.Each(func(s data.Song) error {
-		str := s.Title
-
-		if s.Artist != "" {
-			str += " by " + s.Artist
-		} else if s.AlbumArtist != "" {
-			str += " by " + s.AlbumArtist
-		}
-
-		if s.Album != "" {
-			str += " on " + s.Album
-		}
-
-		if s.Date != "" {
-			str += " [" + s.Date + "]"
-		}
-
-		fmt.Println(str)
+		fmt.Println(formatter(s))
 
 		return nil
 	}, clauses...)
+}
+
+func SimpleFormatter(s data.Song) string {
+	str := s.Title
+
+	if s.Artist != "" {
+		str += " by " + s.Artist
+	} else if s.AlbumArtist != "" {
+		str += " by " + s.AlbumArtist
+	}
+
+	if s.Album != "" {
+		str += " on " + s.Album
+	}
+
+	if s.Date != "" {
+		str += " [" + s.Date + "]"
+	}
+
+	return str
+}
+
+func JsonFormatter(s data.Song) string {
+	data, _ := json.Marshal(s)
+	return string(data)
 }
