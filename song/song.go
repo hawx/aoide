@@ -18,7 +18,18 @@ func Read(path string) (data.Song, error) {
 	}
 
 	disc, discTotal := splitNumber(props["discnumber"])
+	if v, ok := props["disctotal"]; ok {
+		if t, err := strconv.Atoi(v); err == nil {
+			discTotal = t
+		}
+	}
+
 	track, trackTotal := splitNumber(props["tracknumber"])
+	if v, ok := props["tracktotal"]; ok {
+		if t, err := strconv.Atoi(v); err == nil {
+			trackTotal = t
+		}
+	}
 
 	albumArtist := props["albumartist"]
 	if comp, ok := props["compilation"]; ok && comp == "1" && albumArtist == "" {
