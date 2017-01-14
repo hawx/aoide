@@ -68,7 +68,7 @@ func PathFor(musicDir string, song data.Song) string {
 		album = sanitise(song.Album)
 	}
 
-	if song.Disc > 0 && song.DiscTotal > 1 {
+	if song.Disc > 0 || song.DiscTotal > 1 {
 		track += strconv.Itoa(song.Disc)
 		if song.Track > 0 {
 			track += "-"
