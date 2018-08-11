@@ -39,7 +39,7 @@ func (o *Organiser) Organise(verbose bool) (err error) {
 			continue
 		}
 
-		if _, err = os.Stat(newPath); os.IsExist(err) {
+		if _, err = os.Stat(newPath); err == nil || os.IsExist(err) {
 			log.Printf("Error moving '%s': file already exists at destination '%s'", oldPath, newPath)
 			continue
 		}

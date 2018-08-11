@@ -2,16 +2,27 @@ package song
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
 
+	"github.com/dhowden/tag"
 	"github.com/nicksellen/audiotags"
 	"hawx.me/code/aoide/data"
 )
 
 func Read(path string) (data.Song, error) {
+	song, err := readFromAudioTags(path)
+	if err != nil {
+		return readFromTag(path)
+	}
+
+	return song, err
+}
+
+func readFromAudioTags(path string) (data.Song, error) {
 	props, audioProps, err := audiotags.Read(path)
 	if err != nil {
 		return data.Song{}, err
@@ -48,6 +59,38 @@ func Read(path string) (data.Song, error) {
 		Genre:       props["genre"],
 		Length:      audioProps.Length,
 		Title:       props["title"],
+		Track:       track,
+		TrackTotal:  trackTotal,
+	}, nil
+}
+
+func readFromTag(path string) (data.Song, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return data.Song{}, err
+	}
+	defer file.Close()
+
+	tags, err := tag.ReadFrom(file)
+	if err != nil {
+		return data.Song{}, err
+	}
+
+	disc, discTotal := tags.Disc()
+	track, trackTotal := tags.Track()
+
+	return data.Song{
+		Path:        path,
+		Album:       tags.Album(),
+		AlbumArtist: tags.AlbumArtist(),
+		Artist:      tags.Artist(),
+		Composer:    tags.Composer(),
+		Date:        strconv.Itoa(tags.Year()),
+		Disc:        disc,
+		DiscTotal:   discTotal,
+		Genre:       tags.Genre(),
+		Length:      -1,
+		Title:       tags.Title(),
 		Track:       track,
 		TrackTotal:  trackTotal,
 	}, nil

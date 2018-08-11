@@ -1,6 +1,7 @@
 package add
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -139,6 +140,10 @@ func (a *Adder) doAdd(queue bool, recs []addRecord) error {
 }
 
 func copyFile(src, dst string) error {
+	if _, err := os.Stat(dst); err == nil || os.IsExist(err) {
+		return errors.New("destination already exists")
+	}
+
 	in, err := os.Open(src)
 	if err != nil {
 		return err
