@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"code.google.com/p/go-sqlite/go1/sqlite3"
+	sqlite3 "github.com/mattn/go-sqlite3"
 )
 
 type Database struct {
@@ -84,7 +84,7 @@ func (d *Database) Insert(song Song) error {
 		"",
 		"")
 
-	if serr, ok := err.(*sqlite3.Error); ok && serr.Code() == 2067 {
+	if serr, ok := err.(*sqlite3.Error); ok && serr.Code == 2067 {
 		_, err := d.db.Exec(`UPDATE songs SET
     Updated=?,
     Album=?, AlbumArtist=?, Artist=?,

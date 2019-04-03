@@ -60,7 +60,7 @@ func (t *Tagger) Autotag(opts Opts) error {
 			for i, release := range resp.Releases {
 				itemname := fmt.Sprintf("%s by %s released in %s on %s [%d]\n",
 					release.Title,
-					release.ArtistCredit.NameCredit.Artist.Name,
+					release.ArtistCredit.NameCredits[0].Artist.Name,
 					release.Date.Format("2006"),
 					release.Mediums[0].Format,
 					i)
@@ -74,7 +74,7 @@ func (t *Tagger) Autotag(opts Opts) error {
 		chosen := resp.Releases[chosenIdx]
 		log.Printf("Chose: %s by %s released in %s on %s\n",
 			chosen.Title,
-			chosen.ArtistCredit.NameCredit.Artist.Name,
+			chosen.ArtistCredit.NameCredits[0].Artist.Name,
 			chosen.Date.Format("2006"),
 			chosen.Mediums[0].Format)
 
